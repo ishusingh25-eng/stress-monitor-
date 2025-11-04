@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Real-Time GSR Dashboard</title>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f3f6fa;
+      text-align: center;
+      margin: 0;
+      padding: 30px;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    #status {
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+    #chartContainer {
+      width: 90%;
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    canvas {
+      width: 100% !important;
+      height: 400px !important;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📊 Real-Time GSR Dashboard</h1>
+  <div id="status">Connecting to HiveMQ Cloud...</div>
+
+  <div id="chartContainer">
+    <canvas id="gsrChart"></canvas>
+  </div>
+
+  <script>
+    // ===== HiveMQ Cloud Connection Details =====
+    const broker = "wss://21e9fd5f919641f3ba4b3a3d0d44c324.s1.eu.hivemq.cloud:8884/mqtt";
+    const options = {
+      username: "GENXIL",
+      password: "Qwerpoiu00",
+      connectTimeout: 5000,
+      clean: true,
+      reconnectPeriod: 3000,
+    };
+    const topic = "sensors/gsr";
+
+    const statusEl = document.getElementById("status");
+
+    // ===== Initialize MQTT Client =====
+    const client = mqtt.connect(broker, options);
+
+    client.on("connect", () => {
+      statusEl.textContent = "✅ Connected to HiveMQ Cloud";
+      statusEl.style.color = "green";
+      client.subscribe(topic, (err) => {
+        if (err) {
+          statusEl.textContent = "❌ Failed to subscribe to topic";
+          statusEl.style.color = "red";
+        } else {
+          console.log("Subscribed to:", topic);
+        }
+      });
+    });
+
+    client.on("reconnect", () => {
+      statusEl.textContent = "🔄 Reconnecting...";
+      statusEl.style.color = "orange";
+    });
+
+    client.on("error", (err) => {
+      statusEl.textContent = "❌ Connection Error: " + err.message;
+      statusEl.style.color = "red";
+    });
+
+    // ===== Chart.js Setup =====
+    const ctx = document.getElementById("gsrChart").getContext("2d");
+    const gsrData = {
+      labels: [],
+      datasets: [{
+        label: "GSR Value",
+        data: [],
+        borderColor: "#007bff",
+        backgroundColor: "rgba(0, 123, 255, 0.2)",
+        fill: true,
+        borderWidth: 2,
+        tension: 0.3,
+        pointRadius: 0
+      }]
+    };
+
+    const gsrChart = new Chart(ctx, {
+      type: "line",
+      data: gsrData,
+      options: {
+        responsive: true,
+        animation: false,
+        scales: {
+          x: {
+            title: { display: true, text: "Time" },
+            ticks: { autoSkip: true, maxTicksLimit: 10 }
+          },
+          y: {
+            title: { display: true, text: "GSR Value" },
+            min: 0,
+            max: 4095
+          }
+        },
+        plugins: {
+          legend: { display: true, position: "top" }
+        }
+      }
+    });
+
+    // ===== Handle Incoming Data =====
+    client.on("message", (topic, message) => {
+      const gsrValue = parseInt(message.toString());
+      const time = new Date().toLocaleTimeString();
+
+      if (!isNaN(gsrValue)) {
+        if (gsrData.labels.length > 50) {
+          gsrData.labels.shift();
+          gsrData.datasets[0].data.shift();
+        }
+
+        gsrData.labels.push(time);
+        gsrData.datasets[0].data.push(gsrValue);
+
+        gsrChart.update();
+      }
+
+      console.log("Received:", gsrValue);
+    });
+  </script>
+</body>
+</html>

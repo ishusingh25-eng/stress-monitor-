@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - EEG Stress Monitoring System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #2d3b99, #4a5bc7);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+            overflow: hidden;
+        }
+        
+        .brain-waves {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.1;
+        }
+        
+        .wave {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none"><path fill="%23ffffff" d="M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,192C1248,192,1344,128,1392,96L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
+            animation: waveAnimation 20s linear infinite;
+        }
+        
+        .wave:nth-child(2) {
+            animation-delay: -5s;
+            opacity: 0.5;
+        }
+        
+        .wave:nth-child(3) {
+            animation-delay: -10s;
+            opacity: 0.3;
+        }
+        
+        @keyframes waveAnimation {
+            0% {
+                transform: translateX(0) translateY(0);
+            }
+            50% {
+                transform: translateX(-25%) translateY(-15px);
+            }
+            100% {
+                transform: translateX(0) translateY(0);
+            }
+        }
+        
+        .login-container {
+            width: 450px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            z-index: 1;
+            position: relative;
+        }
+        
+        .login-header {
+            background: linear-gradient(135deg, #1a2a6c, #2d3b99);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .login-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            font-size: 30px;
+        }
+        
+        .login-header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .login-header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .login-form {
+            padding: 40px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #444;
+            font-size: 14px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+            padding-left: 40px;
+        }
+        
+        input:focus {
+            border-color: #1a2a6c;
+            box-shadow: 0 0 0 2px rgba(26, 42, 108, 0.2);
+            outline: none;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 12px;
+            top: 35px;
+            color: #777;
+        }
+        
+        .login-btn {
+            background: linear-gradient(135deg, #1a2a6c, #2d3b99);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26, 42, 108, 0.4);
+        }
+        
+        .login-footer {
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid #eee;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .login-footer a {
+            color: #1a2a6c;
+            text-decoration: none;
+        }
+        
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .security-notice {
+            background: rgba(26, 42, 108, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #555;
+            text-align: center;
+            border-left: 3px solid #1a2a6c;
+        }
+        
+        .security-notice i {
+            color: #1a2a6c;
+            margin-right: 5px;
+        }
+        
+        .error-message {
+            color: #e53e3e;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 35px;
+            color: #777;
+            cursor: pointer;
+        }
+        
+        .form-toggle {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        
+        .form-toggle a {
+            color: #1a2a6c;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .form-toggle a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 500px) {
+            .login-container {
+                width: 90%;
+            }
+            
+            .login-form {
+                padding: 30px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="brain-waves">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
+    
+    <div class="login-container">
+        <div class="login-header">
+            <div class="login-icon">
+                <i class="fas fa-brain"></i>
+            </div>
+            <h1>EEG STRESS MONITORING SYSTEM</h1>
+            <p id="welcome-message">Welcome! Please log in to your account</p>
+        </div>
+        
+        <form class="login-form" id="loginForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" id="username" placeholder="Enter your username" required>
+                <div class="error-message" id="username-error"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="password" placeholder="Enter your password" required>
+                <i class="fas fa-eye password-toggle" id="togglePassword"></i>
+                <div class="error-message" id="password-error"></div>
+            </div>
+            
+            <div class="form-group" id="confirmPasswordGroup" style="display: none;">
+                <label for="confirmPassword">Confirm Password</label>
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="confirmPassword" placeholder="Confirm your password">
+                <i class="fas fa-eye password-toggle" id="toggleConfirmPassword"></i>
+                <div class="error-message" id="confirmPassword-error"></div>
+            </div>
+            
+            <button type="submit" class="login-btn" id="submitBtn">Log In</button>
+            
+            <div class="form-toggle">
+                <span id="toggleText">Don't have an account? </span>
+                <a href="#" id="toggleLink">Create Account</a>
+            </div>
+            
+            <div class="security-notice">
+                <i class="fas fa-shield-alt"></i>
+                Your data is securely encrypted and protected.
+            </div>
+        </form>
+        
+        <div class="login-footer">
+            <a href="index.html">← Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        let isCreatingAccount = false;
+        
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // Reset error messages
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.style.display = 'none';
+                el.textContent = '';
+            });
+            
+            let isValid = true;
+            
+            // Username validation
+            if (!username) {
+                document.getElementById('username-error').textContent = 'Username is required';
+                document.getElementById('username-error').style.display = 'block';
+                isValid = false;
+            }
+            
+            // Password validation
+            if (!password) {
+                document.getElementById('password-error').textContent = 'Password is required';
+                document.getElementById('password-error').style.display = 'block';
+                isValid = false;
+            } else if (isCreatingAccount && password.length < 6) {
+                document.getElementById('password-error').textContent = 'Password must be at least 6 characters';
+                document.getElementById('password-error').style.display = 'block';
+                isValid = false;
+            }
+            
+            // Confirm password validation (only for account creation)
+            if (isCreatingAccount) {
+                if (!confirmPassword) {
+                    document.getElementById('confirmPassword-error').textContent = 'Please confirm your password';
+                    document.getElementById('confirmPassword-error').style.display = 'block';
+                    isValid = false;
+                } else if (password !== confirmPassword) {
+                    document.getElementById('confirmPassword-error').textContent = 'Passwords do not match';
+                    document.getElementById('confirmPassword-error').style.display = 'block';
+                    isValid = false;
+                }
+            }
+            
+            if (!isValid) return;
+            
+            // Simulate login/account creation process
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.textContent = isCreatingAccount ? 'Creating Account...' : 'Logging In...';
+            submitBtn.disabled = true;
+            
+            setTimeout(() => {
+                // Success message
+                if (isCreatingAccount) {
+                    alert('Account created successfully! You can now log in.');
+                    toggleFormMode();
+                    document.getElementById('loginForm').reset();
+                } else {
+                    alert('Login successful! Redirecting to dashboard...');
+                    window.location.href = 'dashboard.html';
+
+                }
+                
+                submitBtn.textContent = isCreatingAccount ? 'Create Account' : 'Log In';
+                submitBtn.disabled = false;
+            }, 1500);
+        });
+        
+        // Toggle between login and create account modes
+        document.getElementById('toggleLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            toggleFormMode();
+        });
+        
+        function toggleFormMode() {
+            isCreatingAccount = !isCreatingAccount;
+            
+            const welcomeMessage = document.getElementById('welcome-message');
+            const submitBtn = document.getElementById('submitBtn');
+            const toggleText = document.getElementById('toggleText');
+            const toggleLink = document.getElementById('toggleLink');
+            const confirmPasswordGroup = document.getElementById('confirmPasswordGroup');
+            
+            if (isCreatingAccount) {
+                welcomeMessage.textContent = 'Welcome! Create your account';
+                submitBtn.textContent = 'Create Account';
+                toggleText.textContent = 'Already have an account? ';
+                toggleLink.textContent = 'Log In';
+                confirmPasswordGroup.style.display = 'block';
+            } else {
+                welcomeMessage.textContent = 'Welcome! Please log in to your account';
+                submitBtn.textContent = 'Log In';
+                toggleText.textContent = 'Don\'t have an account? ';
+                toggleLink.textContent = 'Create Account';
+                confirmPasswordGroup.style.display = 'none';
+            }
+            
+            // Reset form and errors
+            document.getElementById('loginForm').reset();
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.style.display = 'none';
+                el.textContent = '';
+            });
+        }
+        
+        // Password visibility toggle
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+        
+        document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            confirmPasswordInput.setAttribute('type', type);
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+    </script>
+</body>
+</html>
